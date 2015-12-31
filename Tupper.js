@@ -12,6 +12,8 @@ var doUpdate;
 var black = [0, 0, 0, 255];
 var white = [255, 255, 255, 255];
 
+//-----Recurring-----
+
 function getColor(i, j) {
   if(bit_map[Math.floor(i / (pixel_size + pixel_break_size)) * 106 + Math.floor(j / (pixel_size + pixel_break_size))] == 0)
     return black;
@@ -30,6 +32,7 @@ function updateImage() {
     }
   }
   doUpdate = 0;
+  console.log("updated");
 }
 
 function drawCanvas() {
@@ -38,6 +41,20 @@ function drawCanvas() {
 
   context.putImageData(complete_image, 50, 50);
 }
+
+function toggleBitAtPixel(event) {
+  var posX = event.pageX - canvas.offsetLeft - 50;
+  var posY = event.pageY - canvas.offsetTop - 50;
+  var x = Math.floor(posX / (pixel_size + pixel_break_size));
+  var y = Math.floor(posY / (pixel_size + pixel_break_size));
+  if(x >= 0 && x < 106 && y >= 0 && y < 17) {
+    bit_map[106 * y + x] = 1 - bit_map[106 * y + x];
+    doUpdate = 1;
+    drawCanvas();
+  }
+}
+
+//-----Initialization-----
 
 function initializeGrid() {
   canvas = document.getElementById('drawingCanvas');
@@ -60,8 +77,12 @@ function initializeGrid() {
     }
   }
   doUpdate = 1;
-  bit_map = [0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0];
+  bit_map = [];
+  for(var i = 0; i < 106 * 17; i++)
+    bit_map.push(Math.floor(Math.random() + 1 - i / 106 / 17));
+  console.log("once");
 }
 
+document.getElementById('drawingCanvas').addEventListener("mousedown", function(event){toggleBitAtPixel(event);});
 initializeGrid();
 drawCanvas();
