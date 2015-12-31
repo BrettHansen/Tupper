@@ -4,19 +4,28 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" media="screen, projection" href="./stylesheet.css">
 
     <title>Tupper Self-Referential Formula</title>
-	
-<!--     <link rel="stylesheet" type="text/css" href="ex1.css">
- -->
   </head>
 
 	<body>
     <h2>Tupper's Self-Referential Formula</h2>
             
-	<canvas id="drawingCanvas" height="900" width="1800">
+	<canvas id="drawingCanvas" height="200" width="1200">
       Your browser does not support HTML5 Canvas.
     </canvas>
+    <fieldset id="general">
+        <legend>Whole Canvas Editing Controls</legend>
+        <input type="button" id="all_black" value="All Black"></input>
+        <input type="button" id="all_white" value="All White"></input>
+        <input type="button" id="all_toggle" value="Toggle All"></input>
+    </fieldset>
+    <br>
+    <fieldset id="editing">
+        <legend>Selection Editing Controls</legend>
+        Editing Mode:<input type="button" id="edit_mode" value="Toggle"></input>
+    </fieldset>
     <br>
 	<script src="Tupper.js"></script>	
 

@@ -1,0 +1,13 @@
+body{
+  width: 900px;
+  height: 900px;
+  
+  font-family: Helvetica, sans-serif;
+}
+
+fieldset{
+  display: block;
+  width: 50%;
+  margin: auto;
+  padding: .2em;
+}
