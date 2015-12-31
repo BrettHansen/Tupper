@@ -1,5 +1,3 @@
-//TODO: It may be possible eliminate doUpdate and just call drawCanvas to force an update
-
 // Function called upon loading. You can either change this function or the 
 // one controlling the drawing
 var pixel_size = 10;
@@ -9,7 +7,6 @@ var context;
 var bg_grid;
 var bit_map;
 var complete_image;
-var doUpdate;
 var lastPosition;
 var drawMode;
 
@@ -35,12 +32,10 @@ function updateImage() {
       }
     }
   }
-  doUpdate = 0;
 }
 
 function drawCanvas() {
-  if(doUpdate == 1)
-    updateImage();
+  updateImage();
 
   context.putImageData(complete_image, 0, 0);
 }
@@ -56,7 +51,6 @@ function getPositionFromEvent(event) {
 function toggleBit(x, y) {
   if(x >= 0 && x < 106 && y >= 0 && y < 17) {
     bit_map[106 * y + x] = 1 - bit_map[106 * y + x];
-    doUpdate = 1;
     drawCanvas();
   }
 }
@@ -64,21 +58,35 @@ function toggleBit(x, y) {
 function setAllBlack() {
   for(var i = 0; i < bit_map.length; i++)
     bit_map[i] = 0;
-  doUpdate = 1;
   drawCanvas();
 }
 
 function setAllWhite() {
   for(var i = 0; i < bit_map.length; i++)
     bit_map[i] = 1;
-  doUpdate = 1;
   drawCanvas();
 }
 
 function setAllToggle() {
   for(var i = 0; i < bit_map.length; i++)
     bit_map[i] = 1 - bit_map[i];
-  doUpdate = 1;
+  drawCanvas();
+}
+
+function flipVertical() {
+  var new_map = [];
+  for(var i = 16; i >= 0; i--)
+    new_map = new_map.concat(bit_map.slice(i * 106, i * 106 + 106));
+  bit_map = new_map.slice();
+  drawCanvas();
+}
+
+function flipHorizontal() {
+  var new_map = [];
+  for(var i = 0; i < 17; i++)
+    for(var j = 105; j >= 0; j--)
+      new_map.push(bit_map[i * 106 + j]);
+  bit_map = new_map.slice();
   drawCanvas();
 }
 
@@ -122,7 +130,6 @@ function editRectangle(event) {
   }
   lastPosition = undefined;
 
-  doUpdate = 1;
   drawCanvas();
 }
 
@@ -159,7 +166,6 @@ function initializeGrid() {
       bg_grid.data[4*(i*bg_grid.width + j) + 3] = 255;
     }
   }
-  doUpdate = 1;
   bit_map = [];
   for(var i = 0; i < 106 * 17; i++)
     bit_map.push(Math.floor(Math.random() + 1 - i / 106 / 17));
@@ -171,6 +177,8 @@ document.getElementById('drawingCanvas').addEventListener("mouseup", editRectang
 document.getElementById('all_black').addEventListener("click", setAllBlack);
 document.getElementById('all_white').addEventListener("click", setAllWhite);
 document.getElementById('all_toggle').addEventListener("click", setAllToggle);
+document.getElementById('flip_vertical').addEventListener("click", flipVertical);
+document.getElementById('flip_horizontal').addEventListener("click", flipHorizontal);
 document.getElementById('edit_mode').addEventListener("click", changeDrawMode);
 
 initializeGrid();
