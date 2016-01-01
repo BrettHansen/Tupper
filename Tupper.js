@@ -36,6 +36,7 @@ function updateImage() {
 
 function drawCanvas() {
   updateImage();
+  encodeBitmap();
 
   context.putImageData(complete_image, 0, 0);
 }
@@ -142,6 +143,17 @@ function changeDrawMode() {
     button_name = "Toggle";
 
   document.getElementById('edit_mode').value = button_name;
+}
+
+function encodeBitmap() {
+  var binary_string = "";
+  for(var j = 0; j < 106; j++) {
+    for(var i = 16; i >= 0; i--) {
+      binary_string += bit_map[i * 106 + j];
+    }
+  }
+  var encoded_number = BigInteger.parse(binary_string, 2);
+  console.log(encoded_number.toString(10));
 }
 
 //-----Initialization-----
