@@ -1,6 +1,6 @@
 // Function called upon loading. You can either change this function or the 
 // one controlling the drawing
-var pixel_size = 10;
+var pixel_size = 9;
 var pixel_break_size = 1;
 var canvas;
 var context;
@@ -11,25 +11,26 @@ var lastPosition;
 var drawMode;
 
 var black = [0, 0, 0, 255];
+var grey = [180, 180, 180, 255];
 var white = [255, 255, 255, 255];
 
 //-----Recurring-----
 
 function getColor(i, j) {
+  if(i % (pixel_size + pixel_break_size) <= pixel_break_size || j % (pixel_size + pixel_break_size) <= pixel_break_size)
+    return grey;
   if(bit_map[Math.floor(i / (pixel_size + pixel_break_size)) * 106 + Math.floor(j / (pixel_size + pixel_break_size))] == 0)
-    return black;
-  return white;
+    return white;
+  return black;
 }
 
 function updateImage() {
   var color_array = bg_grid.data.slice();
-  complete_image = context.createImageData(106 * (pixel_size + pixel_break_size) + 1, 17 * (pixel_size + pixel_break_size) + 1);
+  complete_image = context.createImageData(106 * pixel_size + 107 * pixel_break_size, 17 * pixel_size + 18 * pixel_break_size);
   complete_image.data.set(color_array);
   for(var i = 0; i < complete_image.height; i++) {
     for(var j = 0; j < complete_image.width; j++) {
-      if(i % (pixel_size + pixel_break_size) != 0 && j % (pixel_size + pixel_break_size) != 0) {
-        complete_image.data.set(getColor(i, j), 4 * (i * complete_image.width + j));
-      }
+      complete_image.data.set(getColor(i, j), 4 * ((complete_image.height - i - 1) * complete_image.width + complete_image.width - j - 1));
     }
   }
 }
@@ -136,9 +137,9 @@ function editRectangle(event) {
 
 function changeDrawMode() {
   drawMode = (drawMode + 1) % 3;
-  var button_name = "Set Black";
+  var button_name = "Set White";
   if(drawMode == 1)
-    button_name = "Set White";
+    button_name = "Set Black";
   else if(drawMode == 2)
     button_name = "Toggle";
 
@@ -153,7 +154,31 @@ function encodeBitmap() {
     }
   }
   var encoded_number = BigInteger.parse(binary_string, 2);
-  console.log(encoded_number.toString(10));
+  encoded_number = encoded_number.multiply(17);
+  document.getElementById('k_value').value = encoded_number.toString(10);
+}
+
+function sanitize(str) {
+  return str.replace(/\W/g, '');
+}
+
+function updateKFromEntry() {
+  var input = sanitize(document.getElementById('k_value').value);
+  document.getElementById('k_value').value = input;
+  var entry = BigInteger.parse(input, 10);
+  entry = entry.quotient(17);
+  var columnwise_binary_string = entry.toString(2);
+  while(columnwise_binary_string.length < 106 * 17) {
+    columnwise_binary_string = "0" + columnwise_binary_string;
+  }
+  var new_map = [];
+  for(var i = 16; i >= 0; i--) {
+    for(var j = 0; j < 106; j++) {
+      new_map.push(parseInt(columnwise_binary_string[17 * j + i], 2));
+    }
+  }
+  bit_map = new_map.slice();
+  drawCanvas();
 }
 
 //-----Initialization-----
@@ -161,26 +186,25 @@ function encodeBitmap() {
 function initializeGrid() {
   canvas = document.getElementById('drawingCanvas');
   context = canvas.getContext("2d");
-  bg_grid = context.createImageData(106 * (pixel_size + pixel_break_size) + 1, 17 * (pixel_size + pixel_break_size) + 1);
-  for(var i = 0; i < bg_grid.height; i += pixel_size + pixel_break_size) {
+  bg_grid = context.createImageData(106 * pixel_size + 107 * pixel_break_size, 17 * pixel_size + 18 * pixel_break_size);
+
+  for(var i = 0; i < bg_grid.height; i++) {
     for(var j = 0; j < bg_grid.width; j++) {
-      bg_grid.data[4*(i*bg_grid.width + j) + 0] = 120;
-      bg_grid.data[4*(i*bg_grid.width + j) + 1] = 120;
-      bg_grid.data[4*(i*bg_grid.width + j) + 2] = 120;
-      bg_grid.data[4*(i*bg_grid.width + j) + 3] = 255;
+      if(i % (pixel_size + pixel_break_size) <= pixel_break_size ||
+         j % (pixel_size + pixel_break_size) <= pixel_break_size) {
+        bg_grid.data.set(grey, 4 * (i * bg_grid.width + j));
+      }
     }
   }
-  for(var j = 0; j < bg_grid.width; j += pixel_size + pixel_break_size) {
-    for(var i = 0; i < bg_grid.height; i++) {
-      bg_grid.data[4*(i*bg_grid.width + j) + 0] = 120;
-      bg_grid.data[4*(i*bg_grid.width + j) + 1] = 120;
-      bg_grid.data[4*(i*bg_grid.width + j) + 2] = 120;
-      bg_grid.data[4*(i*bg_grid.width + j) + 3] = 255;
-    }
-  }
-  bit_map = [];
-  for(var i = 0; i < 106 * 17; i++)
-    bit_map.push(Math.floor(Math.random() + 1 - i / 106 / 17));
+  var tupper = "9609393799189588849716729621278527547150043396601293066515055192717028023952664" +
+               "2468964284217435071812126715378277062335599323728087414430789132596394133772348" +
+               "7857735749823926629715517173716995165232890538221612403238855866184013235585136" +
+               "0488286933379024914542292886670810961844960917051834540678277315517054053816273" +
+               "8096760256562501698148208341878316384911559022561000365235137034387446184837873" +
+               "7238198224849863465033159410054974700593138339226497249461751545728366702369745" +
+               "461014655997933798537483143786841806593422227898388722980000748404719";
+  document.getElementById('k_value').value = tupper;
+  updateKFromEntry();
   drawMode = 2;
 }
 
@@ -192,6 +216,7 @@ document.getElementById('all_toggle').addEventListener("click", setAllToggle);
 document.getElementById('flip_vertical').addEventListener("click", flipVertical);
 document.getElementById('flip_horizontal').addEventListener("click", flipHorizontal);
 document.getElementById('edit_mode').addEventListener("click", changeDrawMode);
+document.getElementById('k_value').addEventListener("keyup", updateKFromEntry);
 
 initializeGrid();
 drawCanvas();

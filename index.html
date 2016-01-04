@@ -18,8 +18,8 @@
     </canvas>
     <fieldset id="general">
         <legend>Whole Canvas Editing Controls</legend>
-        <input type="button" id="all_black" value="All Black"></input>
-        <input type="button" id="all_white" value="All White"></input>
+        <input type="button" id="all_white" value="All Black"></input>
+        <input type="button" id="all_black" value="All White"></input>
         <input type="button" id="all_toggle" value="Toggle All"></input>
         <input type="button" id="flip_vertical" value="Flip Vertical"></input>
         <input type="button" id="flip_horizontal" value="Flip Horizontal"></input>
@@ -28,6 +28,12 @@
     <fieldset id="editing">
         <legend>Selection Editing Controls</legend>
         Editing Mode:<input type="button" id="edit_mode" value="Toggle"></input>
+    </fieldset>
+    <br>
+    <fieldset id="seed">
+        <legend>Current k-Value</legend>
+        <textarea id="k_value" cols="100" rows="10" value="0"></textarea>
+        <input type="button" id="refresh_k_value" value="Refresh k-Value"></input>
     </fieldset>
     <br>
     <script src="biginteger.js"></script>
