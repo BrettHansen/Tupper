@@ -30,7 +30,7 @@ function updateImage() {
   complete_image.data.set(color_array);
   for(var i = 0; i < complete_image.height; i++) {
     for(var j = 0; j < complete_image.width; j++) {
-      complete_image.data.set(getColor(i, j), 4 * ((complete_image.height - i - 1) * complete_image.width + complete_image.width - j - 1));
+      complete_image.data.set(getColor(i, j), 4 * (i * complete_image.width + j));
     }
   }
 }
