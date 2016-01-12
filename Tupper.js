@@ -17,6 +17,8 @@ var white = [255, 255, 255, 255];
 //-----Recurring-----
 
 function getColor(i, j) {
+  i = complete_image.height - i - 1;
+  j = complete_image.width - j - 1;
   if(i % (pixel_size + pixel_break_size) <= pixel_break_size || j % (pixel_size + pixel_break_size) <= pixel_break_size)
     return grey;
   if(bit_map[Math.floor(i / (pixel_size + pixel_break_size)) * 106 + Math.floor(j / (pixel_size + pixel_break_size))] == 0)
@@ -45,9 +47,9 @@ function drawCanvas() {
 function getPositionFromEvent(event) {
   var posX = event.pageX - canvas.offsetLeft;
   var posY = event.pageY - canvas.offsetTop;
-  var x = Math.floor(posX / (pixel_size + pixel_break_size));
-  var y = Math.floor(posY / (pixel_size + pixel_break_size));
-  return [x, y];
+  var x = Math.floor((posX - pixel_break_size) / (pixel_size + pixel_break_size));
+  var y = Math.floor((posY - pixel_break_size) / (pixel_size + pixel_break_size));
+  return [105 - x, 16 - y];
 }
 
 function toggleBit(x, y) {
